@@ -20,6 +20,9 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4   # 👈 This line was missing! It downloads your files.
+      
       - name: Set up Node.js Environment
         uses: actions/setup-node@v4
         with:
