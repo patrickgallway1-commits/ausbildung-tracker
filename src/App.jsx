@@ -1,140 +1,103 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 const initialCsvData = [
-  { id: 1, status: "not-applied", track: "Fachinformatiker (Systemintegration)", company: "ITA Systeme", email: "bewerbung@ita-systeme.de", address: "Oststr. 83, 22844 Norderstedt", deadline: "Ongoing (2027)", gehalt: "1,100€ - 1,300€", earnings: "2,800€ -> 6,000€+" },
-  { id: 2, status: "not-applied", track: "Chemielaborant (m/w/d)", company: "tesa SE", email: "recruiting@tesa.com", address: "tesa SE, Norderstedt", deadline: "31.07.2026", gehalt: "1,150€ - 1,400€", earnings: "3,000€ -> 5,500€+" },
-  { id: 3, status: "not-applied", track: "Elektroniker (Energie- und Gebäudetechnik)", company: "Adlershorst", email: "info@adlershorst.de", address: "Adlershorst, Norderstedt", deadline: "Ongoing", gehalt: "900€ - 1,200€", earnings: "2,600€ -> 4,800€+" },
-  { id: 4, status: "not-applied", track: "Elektroniker für Betriebstechnik", company: "Hanseatic Power Solutions", email: "m.grenz@hps-power.com", address: "Hanseatic Power Solutions, Norderstedt", deadline: "Ongoing", gehalt: "1,050€ - 1,350€", earnings: "2,800€ -> 5,500€+" },
-  { id: 5, status: "not-applied", track: "Informationselektroniker", company: "Fritsche Elektrotechnik", email: "mautsch@fritsche-elektro.de", address: "Fritsche Elektrotechnik, Norderstedt", deadline: "Ongoing", gehalt: "950€ - 1,250€", earnings: "2,700€ -> 5,000€+" },
-  { id: 6, status: "not-applied", track: "Operationstechnische/r Assistent/in (OTA)", company: "UKE", email: "bewerbung@uke.de", address: "UKE, Hamburg", deadline: "Ongoing (09/2026)", gehalt: "1,490€ - 1,650€", earnings: "3,200€ -> 5,000€+" },
-  { id: 7, status: "not-applied", track: "Operationstechnischer Assistent (OTA)", company: "Asklepios Wandsbek", email: "bewerbung.wandsbek@asklepios.com", address: "Asklepios Klinik Wandsbek, Hamburg", deadline: "Ongoing (2026)", gehalt: "1,450€ - 1,600€", earnings: "3,100€ -> 4,800€+" },
-  { id: 8, status: "not-applied", track: "Kaufmann im Groß- und Außenhandelsmanagement", company: "Spaeter Gruppe", email: "careers@spaeter.de", address: "Spaeter Gruppe, Norderstedt", deadline: "Ongoing", gehalt: "1,000€ - 1,200€", earnings: "2,500€ -> 5,000€+" },
-  { id: 9, status: "not-applied", track: "Kaufmann im Groß- und Außenhandel", company: "adp MERKUR GmbH", email: "bewerbung@merkur.de", address: "adp MERKUR GmbH, Norderstedt", deadline: "Ongoing", gehalt: "1,000€ - 1,200€", earnings: "2,500€ -> 5,000€+" },
-  { id: 10, status: "not-applied", track: "Verwaltungsfachangestellte/r", company: "Stadt Norderstedt", email: "bewerbung@norderstedt.de", address: "Stadt Norderstedt", deadline: "Ongoing", gehalt: "1,100€ - 1,250€", earnings: "2,800€ -> 4,500€+" }
+  { id: 1, status: "not-applied", track: "Fachinformatiker (Systemintegration)", company: "ITA Systeme", email: "bewerbung@ita-systeme.de", address: "Oststr. 83, 22844 Norderstedt", deadline: "Ongoing (2027)", gehalt: "1,100€ - 1,300€", earnings: "2,800€ -> 6,000€+" }
 ];
 
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const passwordRef = useRef(null);
+  
   const [items, setItems] = useState(() => {
-    const savedData = localStorage.getItem('ausbildung_dashboard_data');
-    if (savedData) {
-      try {
-        return JSON.parse(savedData);
-      } catch (e) {
-        return initialCsvData;
-      }
-    }
-    return initialCsvData;
+    const saved = localStorage.getItem('ausbildung_dashboard_data');
+    return saved ? JSON.parse(saved) : initialCsvData;
   });
 
-  const [searchTerm, setSearchTerm] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
-  const [newTrack, setNewTrack] = useState("");
-  const [newCompany, setNewCompany] = useState("");
-  const [newGehalt, setNewGehalt] = useState("");
-  const [newEarnings, setNewEarnings] = useState("");
-  const [newAddress, setNewAddress] = useState("");
-  const [newEmail, setNewEmail] = useState("");
-  const [newDeadline, setNewDeadline] = useState("");
+  const [formData, setFormData] = useState({ track: "", company: "", gehalt: "", earnings: "", address: "", email: "", deadline: "" });
 
-  useEffect(() => {
-    localStorage.setItem('ausbildung_dashboard_data', JSON.stringify(items));
-  }, [items]);
+  useEffect(() => { localStorage.setItem('ausbildung_dashboard_data', JSON.stringify(items)); }, [items]);
 
-  const total = items.length;
-  const notApplied = items.filter(x => x.status === "not-applied").length;
-  const applied = items.filter(x => x.status === "applied").length;
-  const interviews = items.filter(x => x.status === "interview").length;
-  const offers = items.filter(x => x.status === "offer").length;
-
-  const handleStatusChange = (id, nextStatus) => {
-    setItems(items.map(item => item.id === id ? { ...item, status: nextStatus } : item));
-  };
-
-  const handleRecordDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this position?")) {
-      setItems(items.filter(item => item.id !== id));
-    }
-  };
+  const handleEdit = (id, field, value) => { setItems(items.map(item => item.id === id ? { ...item, [field]: value } : item)); };
+  const handleStatusChange = (id, nextStatus) => { setItems(items.map(item => item.id === id ? { ...item, status: nextStatus } : item)); };
+  const handleRecordDelete = (id) => { if (window.confirm("Delete this entry?")) setItems(items.filter(item => item.id !== id)); };
 
   const handleCreateEntry = (e) => {
     e.preventDefault();
-    if (!newTrack || !newCompany) return alert("Please fill out both the Position Title and Company Name!");
-
-    const entry = {
-      id: Date.now(),
-      status: "not-applied",
-      track: newTrack,
-      company: newCompany,
-      gehalt: newGehalt || "N/A",
-      earnings: newEarnings || "N/A",
-      address: newAddress || "N/A",
-      email: newEmail || "info@firm.de",
-      deadline: newDeadline || "Ongoing"
-    };
-
-    setItems([...items, entry]);
+    setItems([...items, { id: Date.now(), status: "not-applied", ...formData }]);
     setModalOpen(false);
-    setNewTrack(""); setNewCompany(""); setNewGehalt(""); 
-    setNewEarnings(""); setNewAddress(""); setNewEmail(""); setNewDeadline("");
+    setFormData({ track: "", company: "", gehalt: "", earnings: "", address: "", email: "", deadline: "" });
   };
 
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-emerald-100">
+        <div className="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-sm text-center border border-emerald-300">
+          <h2 className="text-2xl font-bold mb-6 text-emerald-950">Secure Access</h2>
+          <input type="password" ref={passwordRef} className="w-full p-4 border border-emerald-400 rounded-2xl mb-4 text-center focus:ring-4 focus:ring-emerald-400 outline-none" placeholder="Enter PIN" />
+          <button onClick={() => { if(passwordRef.current.value === "1234") setIsAuthenticated(true); else passwordRef.current.value = ""; }} className="w-full bg-emerald-900 text-white py-4 rounded-2xl font-bold hover:bg-emerald-950 transition-all">Unlock Pipeline</button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans antialiased flex flex-col md:flex-row">
-      <aside className="w-full md:w-64 bg-slate-900 text-slate-100 flex flex-col shrink-0">
-        <div className="p-6 border-b border-slate-800">
-          <h1 className="text-sm font-bold tracking-wide uppercase text-white">Ausbildung</h1>
+    <div className="min-h-screen bg-emerald-100 p-4 md:p-8 font-sans text-[16px] text-slate-900">
+      <header className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+        <h1 className="text-4xl font-extrabold text-emerald-950">Career Pipeline</h1>
+        <div className="flex gap-3">
+            <button onClick={() => setEditMode(!editMode)} className={`px-6 py-3 rounded-2xl font-bold transition-all ${editMode ? 'bg-amber-600 text-white' : 'bg-emerald-900 text-white'}`}>
+                {editMode ? '🔒 Lock Salary Edits' : '🔓 Unlock Salary Edits'}
+            </button>
+            <button onClick={() => setModalOpen(true)} className="bg-emerald-900 text-white px-8 py-3 rounded-2xl font-bold shadow-lg hover:bg-emerald-950 transition-all">+ New Position</button>
         </div>
-        <nav className="flex-1 p-4">
-          <div className="w-full px-3 py-2 bg-indigo-600 text-white rounded-lg text-xs font-semibold">📊 Central Pipeline Board</div>
-        </nav>
-      </aside>
+      </header>
 
-      <main className="flex-1 min-w-0 flex flex-col">
-        <header className="bg-white border-b border-gray-200 px-6 py-5 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-gray-900">Career Pipeline Tracker</h2>
-          <button onClick={() => setModalOpen(true)} className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs px-4 py-2 rounded-lg">+ New Position</button>
-        </header>
-
-        <div className="p-8 space-y-6">
-          <div className="grid grid-cols-5 gap-4">
-            <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm"><span className="text-[10px] uppercase font-bold text-gray-400">Total</span><div className="text-xl font-bold">{total}</div></div>
-            <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm"><span className="text-[10px] uppercase font-bold text-slate-400">Not Applied</span><div className="text-xl font-bold">{notApplied}</div></div>
-            <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm"><span className="text-[10px] uppercase font-bold text-blue-500">Applied</span><div className="text-xl font-bold">{applied}</div></div>
-            <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm"><span className="text-[10px] uppercase font-bold text-amber-500">Interviews</span><div className="text-xl font-bold">{interviews}</div></div>
-            <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm"><span className="text-[10px] uppercase font-bold text-emerald-500">Offers</span><div className="text-xl font-bold">{offers}</div></div>
-          </div>
-
-          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-            <input type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder="Search..." className="w-full p-4 border-b border-gray-100 text-xs focus:outline-none" />
-            <table className="w-full text-left text-xs">
-              <thead><tr className="bg-gray-50 uppercase text-gray-400 font-bold"><th className="p-4">Track</th><th className="p-4">Stipend</th><th className="p-4">Status</th><th className="p-4">Action</th></tr></thead>
-              <tbody className="divide-y divide-gray-100">
-                {items.filter(v => v.track.toLowerCase().includes(searchTerm.toLowerCase())).map(val => (
-                  <tr key={val.id}>
-                    <td className="p-4 font-semibold">{val.track}<div className="text-gray-400">{val.company}</div></td>
-                    <td className="p-4">{val.gehalt}</td>
-                    <td className="p-4">
-                      <select value={val.status} onChange={(e) => handleStatusChange(val.id, e.target.value)} className="border rounded px-2 py-1">
-                        <option value="not-applied">Not Applied</option><option value="applied">Applied</option><option value="interview">Interview</option><option value="offer">Offer</option><option value="rejected">Rejected</option>
-                      </select>
-                    </td>
-                    <td className="p-4"><button onClick={() => handleRecordDelete(val.id)} className="text-rose-500 font-bold">Delete</button></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </main>
+      <div className="bg-white rounded-3xl shadow-lg border border-emerald-300 overflow-x-auto">
+        <table className="w-full">
+          <thead className="bg-emerald-200">
+            <tr className="text-emerald-950 font-bold uppercase text-[12px] tracking-widest text-left">
+              <th className="p-6">Position</th><th className="p-6">Salary Details {editMode && <span className="text-amber-700">(Editing Enabled)</span>}</th><th className="p-6">Logistics</th><th className="p-6">Status</th><th className="p-6 text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-emerald-200">
+            {items.map((val) => {
+              const rowColors = { applied: 'bg-blue-200/40', interview: 'bg-amber-200/40', offer: 'bg-emerald-300/40', rejected: 'bg-rose-200/40', 'not-applied': 'bg-white' };
+              return (
+                <tr key={val.id} className={`${rowColors[val.status]} hover:bg-emerald-100 transition-colors`}>
+                  <td className="p-6 font-bold">{val.track}<div className="text-emerald-900 font-medium text-sm">{val.company}</div></td>
+                  <td className="p-6 space-y-1">
+                    <input disabled={!editMode} className={`bg-transparent w-full outline-none font-bold text-emerald-950 ${editMode ? 'border-b border-emerald-500' : ''}`} value={val.gehalt} onChange={(e) => handleEdit(val.id, 'gehalt', e.target.value)} />
+                    <input disabled={!editMode} className={`bg-transparent w-full outline-none text-sm text-emerald-800 ${editMode ? 'border-b border-emerald-500' : ''}`} value={val.earnings} onChange={(e) => handleEdit(val.id, 'earnings', e.target.value)} />
+                  </td>
+                  <td className="p-6 text-sm text-slate-800">📍 {val.address}<br/>📧 {val.email}<br/>📅 {val.deadline}</td>
+                  <td className="p-6">
+                    <select value={val.status} onChange={(e) => handleStatusChange(val.id, e.target.value)} className="bg-emerald-950 text-white p-3 rounded-xl text-sm font-bold outline-none cursor-pointer">
+                      <option value="not-applied">Not Applied</option><option value="applied">Applied</option><option value="interview">Interview</option><option value="offer">Offer</option><option value="rejected">Rejected</option>
+                    </select>
+                  </td>
+                  <td className="p-6 text-right"><button onClick={() => handleRecordDelete(val.id)} className="text-rose-800 font-bold hover:scale-110 transition-transform">Delete</button></td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
 
       {modalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <form onSubmit={handleCreateEntry} className="bg-white p-6 rounded-xl w-full max-w-sm space-y-3">
-            <h4 className="font-bold">Add Position</h4>
-            <input type="text" placeholder="Position Name" onChange={e => setNewTrack(e.target.value)} className="w-full p-2 border rounded" required />
-            <input type="text" placeholder="Company Name" onChange={e => setNewCompany(e.target.value)} className="w-full p-2 border rounded" required />
-            <button type="submit" className="w-full bg-indigo-600 text-white p-2 rounded">Save</button>
-            <button type="button" onClick={() => setModalOpen(false)} className="w-full text-gray-400 text-xs">Cancel</button>
+        <div className="fixed inset-0 bg-emerald-950/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <form onSubmit={handleCreateEntry} className="bg-white p-8 rounded-3xl w-full max-w-lg shadow-2xl relative grid grid-cols-2 gap-4 border border-emerald-300">
+            <button type="button" onClick={() => setModalOpen(false)} className="absolute top-6 right-6 text-emerald-950 font-bold text-xl">&times;</button>
+            <h3 className="col-span-2 text-2xl font-bold mb-2">New Position</h3>
+            <input className="col-span-2 p-4 border border-emerald-200 rounded-xl" placeholder="Position" onChange={e => setFormData({...formData, track: e.target.value})} required />
+            <input className="col-span-2 p-4 border border-emerald-200 rounded-xl" placeholder="Company" onChange={e => setFormData({...formData, company: e.target.value})} required />
+            <input className="p-4 border border-emerald-200 rounded-xl" placeholder="Monthly Pay" onChange={e => setFormData({...formData, gehalt: e.target.value})} />
+            <input className="p-4 border border-emerald-200 rounded-xl" placeholder="Future Salary" onChange={e => setFormData({...formData, earnings: e.target.value})} />
+            <input className="col-span-2 p-4 border border-emerald-200 rounded-xl" placeholder="Location/Address" onChange={e => setFormData({...formData, address: e.target.value})} />
+            <input className="col-span-2 p-4 border border-emerald-200 rounded-xl" placeholder="HR Email" onChange={e => setFormData({...formData, email: e.target.value})} />
+            <input className="col-span-2 p-4 border border-emerald-200 rounded-xl" placeholder="Deadline" onChange={e => setFormData({...formData, deadline: e.target.value})} />
+            <button type="submit" className="col-span-2 bg-emerald-900 text-white py-4 rounded-2xl font-bold hover:bg-emerald-950">Add to Pipeline</button>
           </form>
         </div>
       )}
