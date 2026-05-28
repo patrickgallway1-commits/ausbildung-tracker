@@ -195,8 +195,8 @@ export default function App() {
                             <div className="text-[11px] text-amber-600 font-semibold mt-0.5">📅 Deadline: {val.deadline}</div>
                           </td>
                           <td className="p-4">
-                            <a href={`mailto:${val.email}`} className="text-indigo-600 font-semibold hover:underline">✉️ Email HR</a>
-                          </td>
+  <a href={`mailto:${val.email}`} className="text-indigo-600 font-semibold hover:underline">✉️ {val.email}</a>
+</td>
                           <td className="p-4">
                             <select 
                               value={val.status} 
