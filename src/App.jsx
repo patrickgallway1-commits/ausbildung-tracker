@@ -34,6 +34,17 @@ export default function App() {
     setFormData({ track: "", company: "", gehalt: "", earnings: "", address: "", email: "", deadline: "" });
   };
 
+  // Status-to-Color Map for Row Backgrounds
+  const getRowColor = (status) => {
+    switch (status) {
+      case 'applied': return 'bg-blue-50/50 hover:bg-blue-100/50';
+      case 'interview': return 'bg-amber-50/50 hover:bg-amber-100/50';
+      case 'offer': return 'bg-emerald-100/50 hover:bg-emerald-200/50';
+      case 'rejected': return 'bg-rose-50/50 hover:bg-rose-100/50';
+      default: return 'bg-white hover:bg-slate-50';
+    }
+  };
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-emerald-50">
@@ -51,7 +62,6 @@ export default function App() {
       <header className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
         <div>
           <h1 className="text-3xl font-extrabold text-emerald-900">Career Pipeline</h1>
-          <p className="text-emerald-700">Manage your applications</p>
         </div>
         <button onClick={() => setModalOpen(true)} className="bg-emerald-700 text-white px-8 py-3 rounded-2xl font-bold shadow-lg hover:bg-emerald-800 transition-transform hover:-translate-y-1">+ New Position</button>
       </header>
@@ -59,46 +69,44 @@ export default function App() {
       <div className="bg-white rounded-3xl shadow-lg border border-emerald-100 overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-emerald-50/50">
-            <tr className="text-emerald-900 font-bold uppercase text-[10px] tracking-widest">
-              <th className="p-6">Position</th><th className="p-6">Salary (Editable)</th><th className="p-6">Logistics</th><th className="p-6">Status</th><th className="p-6 text-right">Action</th>
+            <tr className="text-emerald-900 font-bold uppercase text-[10px] tracking-widest text-left">
+              <th className="p-6">Position</th><th className="p-6">Salary Details</th><th className="p-6">Logistics</th><th className="p-6">Status</th><th className="p-6 text-right">Action</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-emerald-50">
-            {items.map((val) => {
-              const rowStyle = val.status === 'applied' ? 'bg-emerald-50/30' : val.status === 'offer' ? 'bg-emerald-100/30' : 'bg-white';
-              return (
-                <tr key={val.id} className={`${rowStyle} hover:bg-emerald-100/50 transition-all`}>
-                  <td className="p-6 font-bold">{val.track}<div className="text-emerald-600 font-medium text-xs">{val.company}</div></td>
-                  <td className="p-6 space-y-1">
-                    <input className="bg-transparent border-b border-dashed border-emerald-300 w-full outline-none font-bold text-emerald-800" value={val.gehalt} onChange={(e) => handleEdit(val.id, 'gehalt', e.target.value)} />
-                    <input className="bg-transparent border-b border-dashed border-emerald-300 w-full outline-none text-xs text-emerald-600" value={val.earnings} onChange={(e) => handleEdit(val.id, 'earnings', e.target.value)} />
-                  </td>
-                  <td className="p-6 text-xs font-semibold">{val.deadline}</td>
-                  <td className="p-6">
-                    <select value={val.status} onChange={(e) => handleStatusChange(val.id, e.target.value)} className="bg-emerald-900 text-white p-2 rounded-xl text-xs font-bold outline-none cursor-pointer">
-                      <option value="not-applied">Not Applied</option><option value="applied">Applied</option><option value="interview">Interview</option><option value="offer">Offer</option><option value="rejected">Rejected</option>
-                    </select>
-                  </td>
-                  <td className="p-6 text-right"><button onClick={() => handleRecordDelete(val.id)} className="text-rose-500 font-bold hover:scale-110 transition-transform">Delete</button></td>
-                </tr>
-              );
-            })}
+            {items.map((val) => (
+              <tr key={val.id} className={`${getRowColor(val.status)} transition-all`}>
+                <td className="p-6 font-bold">{val.track}<div className="text-emerald-600 font-medium text-xs">{val.company}</div></td>
+                <td className="p-6 space-y-1">
+                  <input className="bg-transparent border-b border-dashed border-emerald-300 w-full outline-none font-bold text-emerald-800" value={val.gehalt} onChange={(e) => handleEdit(val.id, 'gehalt', e.target.value)} />
+                  <input className="bg-transparent border-b border-dashed border-emerald-300 w-full outline-none text-xs text-emerald-600" value={val.earnings} onChange={(e) => handleEdit(val.id, 'earnings', e.target.value)} />
+                </td>
+                <td className="p-6 text-xs text-slate-500">📍 {val.address}<br/>📧 {val.email}<br/>📅 {val.deadline}</td>
+                <td className="p-6">
+                  <select value={val.status} onChange={(e) => handleStatusChange(val.id, e.target.value)} className="bg-emerald-900 text-white p-2 rounded-xl text-xs font-bold outline-none cursor-pointer">
+                    <option value="not-applied">Not Applied</option><option value="applied">Applied</option><option value="interview">Interview</option><option value="offer">Offer</option><option value="rejected">Rejected</option>
+                  </select>
+                </td>
+                <td className="p-6 text-right"><button onClick={() => handleRecordDelete(val.id)} className="text-rose-500 font-bold hover:scale-110 transition-transform">Delete</button></td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
 
       {modalOpen && (
         <div className="fixed inset-0 bg-emerald-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <form onSubmit={handleCreateEntry} className="bg-white p-8 rounded-3xl w-full max-w-lg shadow-2xl relative">
+          <form onSubmit={handleCreateEntry} className="bg-white p-8 rounded-3xl w-full max-w-lg shadow-2xl relative grid grid-cols-2 gap-4">
             <button type="button" onClick={() => setModalOpen(false)} className="absolute top-6 right-6 text-emerald-900 font-bold text-xl">&times;</button>
-            <h3 className="text-2xl font-bold mb-6">New Position</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <input className="col-span-2 p-3 border rounded-xl" placeholder="Position" onChange={e => setFormData({...formData, track: e.target.value})} required />
-              <input className="col-span-2 p-3 border rounded-xl" placeholder="Company" onChange={e => setFormData({...formData, company: e.target.value})} required />
-              <input className="p-3 border rounded-xl" placeholder="Pay" onChange={e => setFormData({...formData, gehalt: e.target.value})} />
-              <input className="p-3 border rounded-xl" placeholder="Future Salary" onChange={e => setFormData({...formData, earnings: e.target.value})} />
-            </div>
-            <button type="submit" className="w-full mt-6 bg-emerald-700 text-white py-4 rounded-2xl font-bold hover:bg-emerald-800">Add to Pipeline</button>
+            <h3 className="col-span-2 text-2xl font-bold mb-2">New Position</h3>
+            <input className="col-span-2 p-3 border rounded-xl" placeholder="Position" onChange={e => setFormData({...formData, track: e.target.value})} required />
+            <input className="col-span-2 p-3 border rounded-xl" placeholder="Company" onChange={e => setFormData({...formData, company: e.target.value})} required />
+            <input className="p-3 border rounded-xl" placeholder="Monthly Pay" onChange={e => setFormData({...formData, gehalt: e.target.value})} />
+            <input className="p-3 border rounded-xl" placeholder="Future Salary" onChange={e => setFormData({...formData, earnings: e.target.value})} />
+            <input className="col-span-2 p-3 border rounded-xl" placeholder="Location/Address" onChange={e => setFormData({...formData, address: e.target.value})} />
+            <input className="col-span-2 p-3 border rounded-xl" placeholder="HR Email" onChange={e => setFormData({...formData, email: e.target.value})} />
+            <input className="col-span-2 p-3 border rounded-xl" placeholder="Deadline" onChange={e => setFormData({...formData, deadline: e.target.value})} />
+            <button type="submit" className="col-span-2 bg-emerald-700 text-white py-4 rounded-2xl font-bold hover:bg-emerald-800">Add to Pipeline</button>
           </form>
         </div>
       )}
