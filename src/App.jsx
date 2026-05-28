@@ -9,9 +9,9 @@
                     <th className="p-4 pr-6 text-right">Settings</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100 text-gray-700 text-sm"> {/* Changed text-gray-600 to text-gray-700 and text-xs to text-sm */}
-                  {items
-                    .filter(val => 
+                <tbody className="divide-y divide-gray-100 text-gray-700 text-sm">
+  {items
+    .filter(val => 
                       val.track.toLowerCase().includes(searchTerm.toLowerCase()) ||
                       val.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
                       val.address.toLowerCase().includes(searchTerm.toLowerCase())
