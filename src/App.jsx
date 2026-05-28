@@ -36,6 +36,7 @@ export default function App() {
     setFormData({ track: "", company: "", gehalt: "", earnings: "", address: "", email: "", deadline: "" });
   };
 
+  // --- PASSWORD GATE ---
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -48,6 +49,7 @@ export default function App() {
     );
   }
 
+  // --- DASHBOARD ---
   return (
     <div className="min-h-screen bg-slate-50 p-6 md:p-12 font-sans text-slate-800">
       <header className="flex justify-between items-end mb-10">
@@ -97,19 +99,20 @@ export default function App() {
       </div>
 
       {modalOpen && (
-        <div className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm flex items-center justify-center p-4">
-          <form onSubmit={handleCreateEntry} className="bg-white p-8 rounded-2xl w-full max-w-lg shadow-2xl grid grid-cols-2 gap-4">
+        <div className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <form onSubmit={handleCreateEntry} className="bg-white p-8 rounded-2xl w-full max-w-lg shadow-2xl relative grid grid-cols-2 gap-4">
+            <button type="button" onClick={() => setModalOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 font-bold text-xl p-2">&times;</button>
             <h3 className="col-span-2 text-xl font-bold mb-2">New Position</h3>
-            <input className="col-span-2 p-3 border rounded-xl" placeholder="Position Title" onChange={e => setFormData({...formData, track: e.target.value})} required />
-            <input className="col-span-2 p-3 border rounded-xl" placeholder="Company Name" onChange={e => setFormData({...formData, company: e.target.value})} required />
-            <input className="p-3 border rounded-xl" placeholder="Monthly Pay" onChange={e => setFormData({...formData, gehalt: e.target.value})} />
-            <input className="p-3 border rounded-xl" placeholder="Future Salary" onChange={e => setFormData({...formData, earnings: e.target.value})} />
-            <input className="col-span-2 p-3 border rounded-xl" placeholder="Address" onChange={e => setFormData({...formData, address: e.target.value})} />
-            <input className="col-span-2 p-3 border rounded-xl" placeholder="HR Email" onChange={e => setFormData({...formData, email: e.target.value})} />
-            <input className="col-span-2 p-3 border rounded-xl" placeholder="Deadline" onChange={e => setFormData({...formData, deadline: e.target.value})} />
+            <input className="col-span-2 p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Position Title" onChange={e => setFormData({...formData, track: e.target.value})} required />
+            <input className="col-span-2 p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Company Name" onChange={e => setFormData({...formData, company: e.target.value})} required />
+            <input className="p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Monthly Pay" onChange={e => setFormData({...formData, gehalt: e.target.value})} />
+            <input className="p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Future Salary" onChange={e => setFormData({...formData, earnings: e.target.value})} />
+            <input className="col-span-2 p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Address" onChange={e => setFormData({...formData, address: e.target.value})} />
+            <input className="col-span-2 p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="HR Email" onChange={e => setFormData({...formData, email: e.target.value})} />
+            <input className="col-span-2 p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Deadline" onChange={e => setFormData({...formData, deadline: e.target.value})} />
             <div className="col-span-2 flex justify-end gap-3 mt-4">
-                <button type="button" onClick={() => setModalOpen(false)} className="px-6 py-3 text-slate-500 font-bold">Cancel</button>
-                <button type="submit" className="px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold">Add to Pipeline</button>
+                <button type="button" onClick={() => setModalOpen(false)} className="px-6 py-3 text-slate-500 font-bold hover:bg-slate-50 rounded-xl transition">Cancel</button>
+                <button type="submit" className="px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-200">Add to Pipeline</button>
             </div>
           </form>
         </div>
