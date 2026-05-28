@@ -1,91 +1,100 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 
+// Pre-loaded baseline rows
 const initialCsvData = [
-  { id: 1, status: "not-applied", track: "Fachinformatiker (Systemintegration)", company: "ITA Systeme", email: "bewerbung@ita-systeme.de", address: "Oststr. 83, 22844 Norderstedt", deadline: "Ongoing (2027)", gehalt: "1,100€ - 1,300€", earnings: "2,800€ -> 6,000€+" }
+  { id: 1, status: "not-applied", track: "Fachinformatiker (Systemintegration)", company: "ITA Systeme", email: "bewerbung@ita-systeme.de", address: "Oststr. 83, 22844 Norderstedt", deadline: "Ongoing (2027)", gehalt: "1,100€ - 1,300€", earnings: "2,800€ -> 6,000€+" },
+  { id: 2, status: "not-applied", track: "Chemielaborant (m/w/d)", company: "tesa SE", email: "recruiting@tesa.com", address: "tesa SE, Norderstedt", deadline: "31.07.2026", gehalt: "1,150€ - 1,400€", earnings: "3,000€ -> 5,500€+" }
 ];
 
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [editMode, setEditMode] = useState(false); // Toggle for salary editing
-  const passwordRef = useRef(null);
-  
   const [items, setItems] = useState(() => {
-    const saved = localStorage.getItem('ausbildung_dashboard_data');
-    return saved ? JSON.parse(saved) : initialCsvData;
+    const savedData = localStorage.getItem('ausbildung_dashboard_data');
+    return savedData ? JSON.parse(savedData) : initialCsvData;
   });
 
+  const [searchTerm, setSearchTerm] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
-  const [formData, setFormData] = useState({ track: "", company: "", gehalt: "", earnings: "", address: "", email: "", deadline: "" });
 
-  useEffect(() => { localStorage.setItem('ausbildung_dashboard_data', JSON.stringify(items)); }, [items]);
+  // Form hooks
+  const [newTrack, setNewTrack] = useState("");
+  const [newCompany, setNewCompany] = useState("");
+  const [newGehalt, setNewGehalt] = useState("");
+  const [newEarnings, setNewEarnings] = useState("");
+  const [newAddress, setNewAddress] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [newDeadline, setNewDeadline] = useState("");
 
-  const handleEdit = (id, field, value) => { setItems(items.map(item => item.id === id ? { ...item, [field]: value } : item)); };
-  const handleStatusChange = (id, nextStatus) => { setItems(items.map(item => item.id === id ? { ...item, status: nextStatus } : item)); };
-  const handleRecordDelete = (id) => { if (window.confirm("Delete?")) setItems(items.filter(item => item.id !== id)); };
+  useEffect(() => {
+    localStorage.setItem('ausbildung_dashboard_data', JSON.stringify(items));
+  }, [items]);
+
+  const handleStatusChange = (id, nextStatus) => {
+    setItems(items.map(item => item.id === id ? { ...item, status: nextStatus } : item));
+  };
+
+  const handleRecordDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this position?")) {
+      setItems(items.filter(item => item.id !== id));
+    }
+  };
 
   const handleCreateEntry = (e) => {
     e.preventDefault();
-    setItems([...items, { id: Date.now(), status: "not-applied", ...formData }]);
+    if (!newTrack || !newCompany) return alert("Please fill out Position and Company!");
+
+    const entry = {
+      id: Date.now(),
+      status: "not-applied",
+      track: newTrack,
+      company: newCompany,
+      gehalt: newGehalt || "N/A",
+      earnings: newEarnings || "N/A",
+      address: newAddress || "N/A",
+      email: newEmail || "info@firm.de",
+      deadline: newDeadline || "Ongoing"
+    };
+
+    setItems([...items, entry]);
     setModalOpen(false);
-    setFormData({ track: "", company: "", gehalt: "", earnings: "", address: "", email: "", deadline: "" });
+    setNewTrack(""); setNewCompany(""); setNewGehalt(""); 
+    setNewEarnings(""); setNewAddress(""); setNewEmail(""); setNewDeadline("");
   };
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-emerald-100">
-        <div className="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-sm text-center border border-emerald-300">
-          <h2 className="text-2xl font-bold mb-6 text-emerald-950">Secure Access</h2>
-          <input type="password" ref={passwordRef} className="w-full p-4 border border-emerald-400 rounded-2xl mb-4 text-center focus:ring-4 focus:ring-emerald-400 outline-none" placeholder="Enter PIN" />
-          <button onClick={() => { if(passwordRef.current.value === "1234") setIsAuthenticated(true); else passwordRef.current.value = ""; }} className="w-full bg-emerald-900 text-white py-4 rounded-2xl font-bold hover:bg-emerald-950 transition-all">Unlock Pipeline</button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-emerald-100 p-4 md:p-8 font-sans text-[16px] text-slate-900">
-      <header className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-        <h1 className="text-4xl font-extrabold text-emerald-950">Career Pipeline</h1>
-        <div className="flex gap-3">
-            <button onClick={() => setEditMode(!editMode)} className={`px-6 py-3 rounded-2xl font-bold transition-all ${editMode ? 'bg-amber-600 text-white' : 'bg-emerald-900 text-white'}`}>
-                {editMode ? '🔒 Lock Salary Edits' : '🔓 Unlock Salary Edits'}
-            </button>
-            <button onClick={() => setModalOpen(true)} className="bg-emerald-900 text-white px-8 py-3 rounded-2xl font-bold shadow-lg hover:bg-emerald-950 transition-all">+ New Position</button>
-        </div>
-      </header>
+    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans antialiased flex flex-col md:flex-row">
+      <main className="flex-1 min-w-0 flex flex-col">
+        <header className="bg-white border-b border-gray-200 px-6 py-5 flex items-center justify-between">
+          <h2 className="text-xl font-bold text-gray-900">Career Pipeline Tracker</h2>
+          <button 
+            onClick={() => setModalOpen(true)} 
+            className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs px-4 py-2 rounded-lg"
+          >
+            + New Position
+          </button>
+        </header>
 
-      <div className="bg-white rounded-3xl shadow-lg border border-emerald-300 overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-emerald-200">
-            <tr className="text-emerald-950 font-bold uppercase text-[12px] tracking-widest text-left">
-              <th className="p-6">Position</th><th className="p-6">Salary Details {editMode && <span className="text-amber-700">(Editing Enabled)</span>}</th><th className="p-6">Logistics</th><th className="p-6">Status</th><th className="p-6 text-right">Action</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-emerald-200">
-            {items.map((val) => {
-              const rowColors = { applied: 'bg-blue-200/40', interview: 'bg-amber-200/40', offer: 'bg-emerald-300/40', rejected: 'bg-rose-200/40', 'not-applied': 'bg-white' };
-              return (
-                <tr key={val.id} className={`${rowColors[val.status]} hover:bg-emerald-100 transition-colors`}>
-                  <td className="p-6 font-bold">{val.track}<div className="text-emerald-900 font-medium text-sm">{val.company}</div></td>
-                  <td className="p-6 space-y-1">
-                    <input disabled={!editMode} className={`bg-transparent w-full outline-none font-bold text-emerald-950 ${editMode ? 'border-b border-emerald-500' : ''}`} value={val.gehalt} onChange={(e) => handleEdit(val.id, 'gehalt', e.target.value)} />
-                    <input disabled={!editMode} className={`bg-transparent w-full outline-none text-sm text-emerald-800 ${editMode ? 'border-b border-emerald-500' : ''}`} value={val.earnings} onChange={(e) => handleEdit(val.id, 'earnings', e.target.value)} />
-                  </td>
-                  <td className="p-6 text-sm text-slate-800">📍 {val.address}<br/>📧 {val.email}<br/>📅 {val.deadline}</td>
-                  <td className="p-6">
-                    <select value={val.status} onChange={(e) => handleStatusChange(val.id, e.target.value)} className="bg-emerald-950 text-white p-3 rounded-xl text-sm font-bold outline-none cursor-pointer">
-                      <option value="not-applied">Not Applied</option><option value="applied">Applied</option><option value="interview">Interview</option><option value="offer">Offer</option><option value="rejected">Rejected</option>
-                    </select>
-                  </td>
-                  <td className="p-6 text-right"><button onClick={() => handleRecordDelete(val.id)} className="text-rose-800 font-bold hover:scale-110 transition-transform">Delete</button></td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-      
-      {/* Modal remains the same as before */}
+        <div className="p-8">
+           {/* Table Body */}
+           <table className="w-full text-left border-collapse text-xs">
+            {/* ... (Add your table header and logic here) ... */}
+           </table>
+        </div>
+      </main>
+
+      {/* Modal - Ensure this is rendered at the root level */}
+      {modalOpen && (
+        <div className="fixed inset-0 bg-slate-950/40 flex items-center justify-center p-4 z-[9999]">
+          <div className="bg-white rounded-xl max-w-sm w-full p-6 shadow-xl">
+            <h4 className="font-bold mb-4">Create New Record</h4>
+            <form onSubmit={handleCreateEntry} className="space-y-3">
+              <input type="text" value={newTrack} onChange={e => setNewTrack(e.target.value)} placeholder="Position Name" className="w-full px-2 py-1 border rounded" required />
+              <input type="text" value={newCompany} onChange={e => setNewCompany(e.target.value)} placeholder="Company Name" className="w-full px-2 py-1 border rounded" required />
+              <button type="submit" className="bg-indigo-600 text-white px-4 py-2 rounded w-full">Save Position</button>
+              <button type="button" onClick={() => setModalOpen(false)} className="text-gray-500 text-xs w-full">Cancel</button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
