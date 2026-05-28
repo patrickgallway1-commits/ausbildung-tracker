@@ -17,89 +17,89 @@ export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
   const [items, setItems] = useState(() => {
-    const savedData = localStorage.getItem('ausbildung_dashboard_data');
-    return savedData ? JSON.parse(savedData) : initialCsvData;
+    const saved = localStorage.getItem('ausbildung_tracker_data');
+    return saved ? JSON.parse(saved) : initialCsvData;
   });
 
-  const [modalOpen, setModalOpen] = useState(false);
-  const [newTrack, setNewTrack] = useState("");
-  const [newCompany, setNewCompany] = useState("");
-
   useEffect(() => {
-    localStorage.setItem('ausbildung_dashboard_data', JSON.stringify(items));
+    localStorage.setItem('ausbildung_tracker_data', JSON.stringify(items));
   }, [items]);
 
-  const handleStatusChange = (id, nextStatus) => {
-    setItems(items.map(item => item.id === id ? { ...item, status: nextStatus } : item));
+  const handleStatusChange = (id, newStatus) => {
+    setItems(items.map(item => item.id === id ? { ...item, status: newStatus } : item));
   };
 
   const handleRecordDelete = (id) => {
     if (window.confirm("Are you sure?")) setItems(items.filter(item => item.id !== id));
   };
 
-  const handleCreateEntry = (e) => {
-    e.preventDefault();
-    const entry = { id: Date.now(), status: "not-applied", track: newTrack, company: newCompany, email: "info@firm.de" };
-    setItems([...items, entry]);
-    setModalOpen(false);
-  };
-
-  // --- PASSWORD GATEKEEPER ---
+  // 1. PASSWORD GATE
   if (!isAuthenticated) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-slate-100">
-        <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-200 text-center w-80">
-          <h2 className="mb-4 font-bold text-xl">Enter Password</h2>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="border p-2 w-full mb-4 rounded" />
-          <button onClick={() => { if(password === "1234") setIsAuthenticated(true); }} className="bg-indigo-600 text-white px-6 py-2 rounded font-bold w-full">Access Dashboard</button>
+      <div className="min-h-screen flex items-center justify-center bg-slate-100">
+        <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-sm">
+          <h2 className="text-2xl font-bold mb-6 text-center">Login Required</h2>
+          <input 
+            type="password" 
+            className="w-full p-3 border rounded mb-4" 
+            placeholder="Enter password"
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button 
+            className="w-full bg-indigo-600 text-white p-3 rounded font-bold hover:bg-indigo-700"
+            onClick={() => { if(password === "9843543456") setIsAuthenticated(true); }}
+          >
+            Access Dashboard
+          </button>
         </div>
       </div>
     );
   }
 
-  // --- FULL FUNCTIONAL DASHBOARD ---
+  // 2. FULL ORIGINAL DASHBOARD LAYOUT
   return (
     <div className="min-h-screen bg-slate-50 p-8">
-      <h1 className="text-2xl font-bold mb-6">Career Pipeline Tracker</h1>
-      <button onClick={() => setModalOpen(true)} className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-bold mb-6">+ New Position</button>
-      
-      <table className="w-full bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden">
-        <thead className="bg-gray-100 text-sm uppercase text-gray-500">
-          <tr>
-            <th className="p-4">Position</th>
-            <th className="p-4">Contact</th>
-            <th className="p-4">Status</th>
-            <th className="p-4">Action</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-200 text-sm">
-          {items.map((val) => (
-            <tr key={val.id}>
-              <td className="p-4 font-bold text-lg">{val.track}</td>
-              <td className="p-4 text-indigo-600 font-bold underline"><a href={`mailto:${val.email}`}>{val.email}</a></td>
-              <td className="p-4">
-                <select value={val.status} onChange={(e) => handleStatusChange(val.id, e.target.value)} className="p-2 border rounded font-bold">
-                  <option value="not-applied">Not Applied</option>
-                  <option value="applied">Applied</option>
-                  <option value="interview">Interview</option>
-                  <option value="offer">Offer</option>
-                </select>
-              </td>
-              <td className="p-4"><button onClick={() => handleRecordDelete(val.id)} className="text-red-500 font-bold">Delete</button></td>
+      <h1 className="text-3xl font-bold mb-8 text-slate-800">Ausbildung Tracker</h1>
+      <div className="bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden">
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+              <th className="p-6">Position / Company</th>
+              <th className="p-6">Email</th>
+              <th className="p-6">Status</th>
+              <th className="p-6">Action</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {modalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
-          <form onSubmit={handleCreateEntry} className="bg-white p-8 rounded-xl shadow-xl w-96">
-            <input type="text" placeholder="Position" onChange={e => setNewTrack(e.target.value)} className="w-full p-2 border mb-4" required />
-            <input type="text" placeholder="Company" onChange={e => setNewCompany(e.target.value)} className="w-full p-2 border mb-4" required />
-            <button type="submit" className="bg-indigo-600 text-white px-4 py-2 rounded">Save</button>
-          </form>
-        </div>
-      )}
+          </thead>
+          <tbody className="text-gray-600 text-sm divide-y divide-gray-200">
+            {items.map((item) => (
+              <tr key={item.id} className="hover:bg-gray-50">
+                <td className="p-6">
+                  <div className="font-bold text-base text-gray-900">{item.track}</div>
+                  <div className="text-gray-500">{item.company}</div>
+                </td>
+                <td className="p-6 font-medium text-indigo-600">
+                  <a href={`mailto:${item.email}`}>{item.email}</a>
+                </td>
+                <td className="p-6">
+                  <select 
+                    value={item.status} 
+                    onChange={(e) => handleStatusChange(item.id, e.target.value)}
+                    className="p-2 border rounded bg-white"
+                  >
+                    <option value="not-applied">Not Applied</option>
+                    <option value="applied">Applied</option>
+                    <option value="interview">Interview</option>
+                    <option value="offer">Offer</option>
+                  </select>
+                </td>
+                <td className="p-6">
+                  <button onClick={() => handleRecordDelete(item.id)} className="text-red-500 font-bold hover:underline">Delete</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
