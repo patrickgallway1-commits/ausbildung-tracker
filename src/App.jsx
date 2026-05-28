@@ -25,7 +25,7 @@ export default function App() {
   };
 
   const handleRecordDelete = (id) => {
-    if (window.confirm("Are you sure?")) setItems(items.filter(item => item.id !== id));
+    if (window.confirm("Delete this entry?")) setItems(items.filter(item => item.id !== id));
   };
 
   const handleCreateEntry = (e) => {
@@ -38,66 +38,79 @@ export default function App() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-900">
-        <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-sm text-center">
-          <h2 className="text-xl font-bold mb-4">Access Restricted</h2>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-2 border rounded mb-4" placeholder="Password" />
-          <button onClick={() => { if(password === "1234") setIsAuthenticated(true); }} className="w-full bg-indigo-600 text-white p-2 rounded font-bold">Unlock</button>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="bg-white p-10 rounded-2xl shadow-xl w-full max-w-sm border border-slate-100 text-center">
+          <h2 className="text-2xl font-bold mb-6 text-slate-900">Secure Access</h2>
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-3 border border-slate-200 rounded-xl mb-4 focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Enter PIN" />
+          <button onClick={() => { if(password === "1234") setIsAuthenticated(true); }} className="w-full bg-slate-900 text-white py-3 rounded-xl font-bold hover:bg-slate-800 transition-all">Unlock Pipeline</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-8">
-      <h1 className="text-2xl font-bold mb-6 text-slate-800">Career Pipeline Tracker</h1>
-      <button onClick={() => setModalOpen(true)} className="bg-indigo-600 text-white px-6 py-2 rounded mb-6 font-bold">+ New Position</button>
-      
-      <table className="w-full bg-white border shadow-sm rounded-xl overflow-hidden">
-        <thead className="bg-gray-100 uppercase text-xs text-gray-500">
-          <tr><th className="p-4">Track & Company</th><th className="p-4">Pay/Scale</th><th className="p-4">Logistics</th><th className="p-4">Contact</th><th className="p-4">Status</th><th className="p-4">Action</th></tr>
-        </thead>
-        <tbody className="divide-y text-xs">
-          {items.map((val) => {
-            let rowColor = "bg-white"; // Default original white background
-            if (val.status === 'applied') rowColor = "bg-blue-50";
-            if (val.status === 'interview') rowColor = "bg-amber-50";
-            if (val.status === 'offer') rowColor = "bg-emerald-50";
-            if (val.status === 'rejected') rowColor = "bg-rose-50";
-            
-            return (
-              <tr key={val.id} className={`${rowColor} hover:opacity-90`}>
-                <td className="p-4 font-bold">{val.track}<div className="font-normal text-gray-500">{val.company}</div></td>
-                <td className="p-4">💰 {val.gehalt}<br/><span className="text-indigo-600">🚀 {val.earnings}</span></td>
-                <td className="p-4">📍 {val.address}<br/><span className="text-amber-600">📅 {val.deadline}</span></td>
-                <td className="p-4 text-indigo-600 underline"><a href={`mailto:${val.email}`}>{val.email}</a></td>
-                <td className="p-4">
-                  <select value={val.status} onChange={(e) => handleStatusChange(val.id, e.target.value)} className="p-1 border rounded font-bold bg-white">
-                    <option value="not-applied">Not Applied</option>
-                    <option value="applied">Applied</option>
-                    <option value="interview">Interview</option>
-                    <option value="offer">Offer</option>
-                    <option value="rejected">Rejected</option>
-                  </select>
-                </td>
-                <td className="p-4"><button onClick={() => handleRecordDelete(val.id)} className="text-red-500 font-bold">Delete</button></td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+    <div className="min-h-screen bg-slate-50 p-6 md:p-12 font-sans text-slate-800">
+      <header className="flex justify-between items-end mb-10">
+        <div>
+          <h1 className="text-3xl font-extrabold tracking-tight">Career Pipeline</h1>
+          <p className="text-slate-500 mt-1">Manage your application journey.</p>
+        </div>
+        <button onClick={() => setModalOpen(true)} className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all">+ Add Position</button>
+      </header>
+
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <table className="w-full text-sm">
+          <thead className="bg-slate-50 border-b border-slate-100">
+            <tr className="text-left text-slate-400 font-bold uppercase text-[10px] tracking-widest">
+              <th className="p-6">Position</th><th className="p-6">Salary Details</th><th className="p-6">Logistics</th><th className="p-6">Contact</th><th className="p-6">Status</th><th className="p-6 text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {items.map((val) => {
+              let rowStyle = "bg-white";
+              if (val.status === 'applied') rowStyle = "bg-blue-50/30";
+              if (val.status === 'interview') rowStyle = "bg-amber-50/30";
+              if (val.status === 'offer') rowStyle = "bg-emerald-50/30";
+              if (val.status === 'rejected') rowStyle = "bg-rose-50/30";
+              
+              return (
+                <tr key={val.id} className={`${rowStyle} transition-colors`}>
+                  <td className="p-6 font-bold text-slate-900">{val.track}<div className="font-medium text-slate-400 text-xs">{val.company}</div></td>
+                  <td className="p-6 text-slate-600">💰 {val.gehalt}<br/><span className="text-indigo-600 font-semibold text-xs">🚀 {val.earnings}</span></td>
+                  <td className="p-6 text-slate-600">📍 {val.address}<br/><span className="text-amber-600 font-semibold text-xs">📅 {val.deadline}</span></td>
+                  <td className="p-6 text-indigo-600 font-medium underline"><a href={`mailto:${val.email}`}>{val.email}</a></td>
+                  <td className="p-6">
+                    <select value={val.status} onChange={(e) => handleStatusChange(val.id, e.target.value)} className="p-2 border border-slate-200 rounded-lg font-bold text-xs bg-white focus:ring-2 focus:ring-indigo-100 outline-none">
+                      <option value="not-applied">Not Applied</option>
+                      <option value="applied">Applied</option>
+                      <option value="interview">Interview</option>
+                      <option value="offer">Offer</option>
+                      <option value="rejected">Rejected</option>
+                    </select>
+                  </td>
+                  <td className="p-6 text-right"><button onClick={() => handleRecordDelete(val.id)} className="text-rose-400 font-bold hover:text-rose-600">Delete</button></td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
 
       {modalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4">
-          <form onSubmit={handleCreateEntry} className="bg-white p-6 rounded-lg w-full max-w-md grid grid-cols-2 gap-3">
-            <input className="col-span-2 p-2 border rounded" placeholder="Position" onChange={e => setFormData({...formData, track: e.target.value})} required />
-            <input className="col-span-2 p-2 border rounded" placeholder="Company" onChange={e => setFormData({...formData, company: e.target.value})} required />
-            <input className="p-2 border rounded" placeholder="Monthly Pay" onChange={e => setFormData({...formData, gehalt: e.target.value})} />
-            <input className="p-2 border rounded" placeholder="Future Salary" onChange={e => setFormData({...formData, earnings: e.target.value})} />
-            <input className="col-span-2 p-2 border rounded" placeholder="Address" onChange={e => setFormData({...formData, address: e.target.value})} />
-            <input className="col-span-2 p-2 border rounded" placeholder="Email" onChange={e => setFormData({...formData, email: e.target.value})} />
-            <input className="col-span-2 p-2 border rounded" placeholder="Deadline" onChange={e => setFormData({...formData, deadline: e.target.value})} />
-            <button type="submit" className="col-span-2 bg-indigo-600 text-white p-2 rounded">Save Position</button>
+        <div className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm flex items-center justify-center p-4">
+          <form onSubmit={handleCreateEntry} className="bg-white p-8 rounded-2xl w-full max-w-lg shadow-2xl grid grid-cols-2 gap-4">
+            <h3 className="col-span-2 text-xl font-bold mb-2">New Position</h3>
+            <input className="col-span-2 p-3 border rounded-xl" placeholder="Position Title" onChange={e => setFormData({...formData, track: e.target.value})} required />
+            <input className="col-span-2 p-3 border rounded-xl" placeholder="Company Name" onChange={e => setFormData({...formData, company: e.target.value})} required />
+            <input className="p-3 border rounded-xl" placeholder="Monthly Pay" onChange={e => setFormData({...formData, gehalt: e.target.value})} />
+            <input className="p-3 border rounded-xl" placeholder="Future Salary" onChange={e => setFormData({...formData, earnings: e.target.value})} />
+            <input className="col-span-2 p-3 border rounded-xl" placeholder="Address" onChange={e => setFormData({...formData, address: e.target.value})} />
+            <input className="col-span-2 p-3 border rounded-xl" placeholder="HR Email" onChange={e => setFormData({...formData, email: e.target.value})} />
+            <input className="col-span-2 p-3 border rounded-xl" placeholder="Deadline" onChange={e => setFormData({...formData, deadline: e.target.value})} />
+            <div className="col-span-2 flex justify-end gap-3 mt-4">
+                <button type="button" onClick={() => setModalOpen(false)} className="px-6 py-3 text-slate-500 font-bold">Cancel</button>
+                <button type="submit" className="px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold">Add to Pipeline</button>
+            </div>
           </form>
         </div>
       )}
