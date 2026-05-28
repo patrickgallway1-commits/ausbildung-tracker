@@ -246,4 +246,31 @@ export default function App() {
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold uppercase text-gray-400 mb-0.5">Future Salary</label>
-                  <input type="text" value={newEarnings} onChange={e => setNewEarnings(e.target.value)} placeholder="e.g. 4,500€" className="w-full px-2.5 py-1.5 border border-gray-
+                  <input type="text" value={newEarnings} onChange={e => setNewEarnings(e.target.value)} placeholder="e.g. 4,500€" className="w-full px-2.5 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-indigo-500" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold uppercase text-gray-400 mb-0.5">Location Address</label>
+                <input type="text" value={newAddress} onChange={e => setNewAddress(e.target.value)} placeholder="e.g. Hamburg, DE" className="w-full px-2.5 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-indigo-500" />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-[10px] font-bold uppercase text-gray-400 mb-0.5">HR Email</label>
+                  <input type="email" value={newEmail} onChange={e => setNewEmail(e.target.value)} placeholder="jobs@firm.de" className="w-full px-2.5 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-indigo-500" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold uppercase text-gray-400 mb-0.5">Deadline Limit</label>
+                  <input type="text" value={newDeadline} onChange={e => setNewDeadline(e.target.value)} placeholder="Ongoing" className="w-full px-2.5 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-indigo-500" />
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 pt-4 border-t border-gray-100 mt-5">
+                <button type="button" onClick={() => setModalOpen(false)} className="px-3 py-1.5 text-xs font-semibold text-gray-500 hover:bg-gray-50 rounded-lg transition-colors">Cancel</button>
+                <button type="submit" className="px-3.5 py-1.5 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-xs transition-colors">Save Position</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
