@@ -14,70 +14,30 @@ const initialCsvData = [
   { id: 10, status: "not-applied", track: "Verwaltungsfachangestellte/r", company: "Stadt Norderstedt", email: "bewerbung@norderstedt.de", address: "Stadt Norderstedt", deadline: "Ongoing", gehalt: "1,100€ - 1,250€", earnings: "2,800€ -> 4,500€+" }
 ];
 
-export default function App() {
-  // Use browser LocalStorage to remember your data modifications dynamically
-  const [items, setItems] = useState(() => {
-    const savedData = localStorage.getItem('ausbildung_dashboard_data');
-    return savedData ? JSON.parse(savedData) : initialCsvData;
-  });
+const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [password, setPassword] = useState("");
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [modalOpen, setModalOpen] = useState(false);
-
-  // Form hooks for creating a new custom record
-  const [newTrack, setNewTrack] = useState("");
-  const [newCompany, setNewCompany] = useState("");
-  const [newGehalt, setNewGehalt] = useState("");
-  const [newEarnings, setNewEarnings] = useState("");
-  const [newAddress, setNewAddress] = useState("");
-  const [newEmail, setNewEmail] = useState("");
-  const [newDeadline, setNewDeadline] = useState("");
-
-  useEffect(() => {
-    localStorage.setItem('ausbildung_dashboard_data', JSON.stringify(items));
-  }, [items]);
-
-  // Live Metric Calculation Blocks
-  const total = items.length;
-  const notApplied = items.filter(x => x.status === "not-applied").length;
-  const applied = items.filter(x => x.status === "applied").length;
-  const interviews = items.filter(x => x.status === "interview").length;
-  const offers = items.filter(x => x.status === "offer").length;
-
-  const handleStatusChange = (id, nextStatus) => {
-    setItems(items.map(item => item.id === id ? { ...item, status: nextStatus } : item));
-  };
-
-  const handleRecordDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this position from your dashboard tracking?")) {
-      setItems(items.filter(item => item.id !== id));
-    }
-  };
-
-  const handleCreateEntry = (e) => {
-    e.preventDefault();
-    if (!newTrack || !newCompany) return alert("Please fill out both the Position Title and Company Name!");
-
-    const entry = {
-      id: Date.now(),
-      status: "not-applied",
-      track: newTrack,
-      company: newCompany,
-      gehalt: newGehalt || "N/A",
-      earnings: newEarnings || "N/A",
-      address: newAddress || "N/A",
-      email: newEmail || "info@firm.de",
-      deadline: newDeadline || "Ongoing"
-    };
-
-    setItems([...items, entry]);
-    setModalOpen(false);
-    
-    // Clear the form fields
-    setNewTrack(""); setNewCompany(""); setNewGehalt(""); 
-    setNewEarnings(""); setNewAddress(""); setNewEmail(""); setNewDeadline("");
-  };
-
+  if (!isAuthenticated) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-slate-100">
+        <div className="bg-white p-8 rounded-xl shadow-md">
+          <h2 className="mb-4 font-bold text-xl">Enter Password</h2>
+          <input 
+            type="password" 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="border p-2 w-full mb-4"
+          />
+          <button 
+            onClick={() => { if(password === "9843543456%") setIsAuthenticated(true); }}
+            className="bg-indigo-600 text-white px-4 py-2 rounded"
+          >
+            Access Dashboard
+          </button>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans antialiased flex flex-col md:flex-row">
       {/* Structural Sidebar Menu Component */}
