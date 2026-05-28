@@ -30,12 +30,13 @@ export default function App() {
     setFormData({ track: "", company: "", gehalt: "", earnings: "", address: "", email: "", deadline: "" });
   };
 
+  // Status Colors
   const rowColors = {
-    applied: 'bg-green-200/50',
-    interview: 'bg-yellow-200/50',
-    offer: 'bg-green-400/50',
-    rejected: 'bg-red-900/20',
-    'not-applied': 'bg-amber-800/20'
+    applied: 'bg-orange-600/30',      // Dark Orange
+    interview: 'bg-yellow-300',       // Neon Yellow
+    offer: 'bg-emerald-800/40',       // Dark Green
+    rejected: 'bg-red-900/60',        // Crimson/Dark Red
+    'not-applied': 'bg-white'         // White
   };
 
   if (!isAuthenticated) {
@@ -44,7 +45,7 @@ export default function App() {
         <div className="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-sm text-center border border-emerald-300">
           <h2 className="text-2xl font-bold mb-6 text-emerald-950">Secure Access</h2>
           <input type="password" ref={passwordRef} className="w-full p-4 border border-emerald-400 rounded-2xl mb-4 text-center focus:ring-4 focus:ring-emerald-400 outline-none" placeholder="Enter PIN" />
-          <button onClick={() => { if(passwordRef.current.value === "9843543456%") setIsAuthenticated(true); else passwordRef.current.value = ""; }} className="w-full bg-emerald-900 text-white py-4 rounded-2xl font-bold hover:bg-emerald-950 transition-all">Unlock Pipeline</button>
+          <button onClick={() => { if(passwordRef.current.value === "1234") setIsAuthenticated(true); else passwordRef.current.value = ""; }} className="w-full bg-emerald-900 text-white py-4 rounded-2xl font-bold hover:bg-emerald-950 transition-all">Unlock Pipeline</button>
         </div>
       </div>
     );
@@ -55,12 +56,13 @@ export default function App() {
       <header className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <h1 className="text-4xl font-extrabold text-emerald-950">Career Pipeline</h1>
         
-        <div className="flex gap-2 text-[10px] font-bold uppercase tracking-wider">
-            <span className="px-3 py-1 rounded-full bg-green-200/50">Applied</span>
-            <span className="px-3 py-1 rounded-full bg-yellow-200/50">Interview</span>
-            <span className="px-3 py-1 rounded-full bg-green-400/50">Offer</span>
-            <span className="px-3 py-1 rounded-full bg-red-900/20">Rejected</span>
-            <span className="px-3 py-1 rounded-full bg-amber-800/20">Not Applied</span>
+        {/* Clearly Visible Stroke-Box Legend */}
+        <div className="border-2 border-emerald-900 p-4 rounded-2xl bg-white shadow-lg flex flex-wrap gap-4 text-[11px] font-bold uppercase tracking-wider">
+            <div className="flex items-center gap-2"><span className="w-4 h-4 border border-black bg-red-900"></span> Rejected</div>
+            <div className="flex items-center gap-2"><span className="w-4 h-4 border border-black bg-emerald-800"></span> Offered</div>
+            <div className="flex items-center gap-2"><span className="w-4 h-4 border border-black bg-white"></span> Not Applied</div>
+            <div className="flex items-center gap-2"><span className="w-4 h-4 border border-black bg-orange-600"></span> Applied</div>
+            <div className="flex items-center gap-2"><span className="w-4 h-4 border border-black bg-yellow-300"></span> Interview</div>
         </div>
 
         <div className="flex gap-3">
@@ -80,7 +82,7 @@ export default function App() {
           </thead>
           <tbody className="divide-y divide-emerald-200">
             {items.map((val) => (
-              <tr key={val.id} className={`${rowColors[val.status]} hover:opacity-80 transition-opacity`}>
+              <tr key={val.id} className={`${rowColors[val.status]} transition-colors`}>
                 <td className="p-6 font-bold">{val.track}<div className="text-emerald-900 font-medium text-sm">{val.company}</div></td>
                 <td className="p-6 space-y-1">
                   <input disabled={!editMode} className={`bg-transparent w-full outline-none font-bold text-emerald-950 ${editMode ? 'border-b border-emerald-500' : ''}`} value={val.gehalt} onChange={(e) => handleEdit(val.id, 'gehalt', e.target.value)} />
@@ -108,7 +110,7 @@ export default function App() {
             <input className="col-span-2 p-4 border border-emerald-200 rounded-xl" placeholder="Company" onChange={e => setFormData({...formData, company: e.target.value})} required />
             <input className="p-4 border border-emerald-200 rounded-xl" placeholder="Monthly Pay" onChange={e => setFormData({...formData, gehalt: e.target.value})} />
             <input className="p-4 border border-emerald-200 rounded-xl" placeholder="Future Salary" onChange={e => setFormData({...formData, earnings: e.target.value})} />
-            <input className="col-span-2 p-4 border border-emerald-200 rounded-xl" placeholder="Location/Address" onChange={e => setFormData({...formData, address: e.target.value})} />
+            <input className="col-span-2 p-4 border border-emerald-200 rounded-xl" placeholder="Location" onChange={e => setFormData({...formData, address: e.target.value})} />
             <input className="col-span-2 p-4 border border-emerald-200 rounded-xl" placeholder="HR Email" onChange={e => setFormData({...formData, email: e.target.value})} />
             <input className="col-span-2 p-4 border border-emerald-200 rounded-xl" placeholder="Deadline" onChange={e => setFormData({...formData, deadline: e.target.value})} />
             <button type="submit" className="col-span-2 bg-emerald-900 text-white py-4 rounded-2xl font-bold hover:bg-emerald-950">Add to Pipeline</button>
