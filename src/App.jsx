@@ -69,11 +69,12 @@ export default function App() {
           </thead>
           <tbody className="divide-y divide-slate-100">
             {items.map((val) => {
+              // Row color logic
               let rowStyle = "bg-white";
-              if (val.status === 'applied') rowStyle = "bg-blue-50/30";
-              if (val.status === 'interview') rowStyle = "bg-amber-50/30";
-              if (val.status === 'offer') rowStyle = "bg-emerald-50/30";
-              if (val.status === 'rejected') rowStyle = "bg-rose-50/30";
+              if (val.status === 'applied') rowStyle = "bg-blue-50/50";
+              if (val.status === 'interview') rowStyle = "bg-amber-50/50";
+              if (val.status === 'offer') rowStyle = "bg-emerald-50/50";
+              if (val.status === 'rejected') rowStyle = "bg-rose-50/50";
               
               return (
                 <tr key={val.id} className={`${rowStyle} transition-colors`}>
