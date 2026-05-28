@@ -37,7 +37,6 @@ const [isAuthenticated, setIsAuthenticated] = useState(false);
         </div>
       </div>
     );
-  }
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans antialiased flex flex-col md:flex-row">
       {/* Structural Sidebar Menu Component */}
