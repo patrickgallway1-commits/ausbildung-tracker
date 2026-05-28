@@ -120,23 +120,23 @@ export default function App() {
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-3.5">
             <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-2xs">
               <span className="text-[10px] font-bold uppercase text-gray-400 tracking-wider">Total Rows</span>
-              <div className="text-xl font-bold mt-1 text-gray-900">{total}</div>
+              <div className="text-3xl font-bold mt-1 text-gray-900">{total}</div>
             </div>
             <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-2xs">
               <span className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Not Applied</span>
-              <div className="text-xl font-bold mt-1 text-slate-600">{notApplied}</div>
+              <div className="text-3xl font-bold mt-1 text-slate-600">{notApplied}</div>
             </div>
             <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-2xs">
               <span className="text-[10px] font-bold uppercase text-blue-500 tracking-wider">Applied</span>
-              <div className="text-xl font-bold mt-1 text-blue-600">{applied}</div>
+              <div className="text-3xl font-bold mt-1 text-blue-600">{applied}</div>
             </div>
             <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-2xs">
               <span className="text-[10px] font-bold uppercase text-amber-500 tracking-wider">Interviews</span>
-              <div className="text-xl font-bold mt-1 text-amber-600">{interviews}</div>
+              <div className="text-3xl font-bold mt-1 text-amber-600">{interviews}</div>
             </div>
             <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-2xs col-span-2 lg:col-span-1">
               <span className="text-[10px] font-bold uppercase text-emerald-500 tracking-wider">Offers Received</span>
-              <div className="text-xl font-bold mt-1 text-emerald-600">{offers}</div>
+              <div className="text-3xl font-bold mt-1 text-emerald-600">{offers}</div>
             </div>
           </div>
 
