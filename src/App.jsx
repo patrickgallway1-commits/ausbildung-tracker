@@ -17,7 +17,7 @@ export default function App() {
             className="border p-2 w-full mb-4 rounded"
           />
           <button 
-            onClick={() => { if(password === "1234") setIsAuthenticated(true); }}
+            onClick={() => { if(password === "9843543456") setIsAuthenticated(true); }}
             className="bg-indigo-600 text-white px-6 py-2 rounded font-bold w-full"
           >
             Access Dashboard
