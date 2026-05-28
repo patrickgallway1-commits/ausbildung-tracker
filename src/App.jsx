@@ -7,6 +7,7 @@ const initialCsvData = [
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [editMode, setEditMode] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const passwordRef = useRef(null);
   
   const [items, setItems] = useState(() => {
@@ -14,7 +15,6 @@ export default function App() {
     return saved ? JSON.parse(saved) : initialCsvData;
   });
 
-  const [modalOpen, setModalOpen] = useState(false);
   const [formData, setFormData] = useState({ track: "", company: "", gehalt: "", earnings: "", address: "", email: "", deadline: "" });
 
   useEffect(() => { localStorage.setItem('ausbildung_dashboard_data', JSON.stringify(items)); }, [items]);
@@ -55,7 +55,6 @@ export default function App() {
       <header className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <h1 className="text-4xl font-extrabold text-emerald-950">Career Pipeline</h1>
         
-        {/* Compact Legend - Pirelli Style */}
         <div className="flex gap-2 text-[10px] font-bold uppercase tracking-wider">
             <span className="px-3 py-1 rounded-full bg-green-200/50">Applied</span>
             <span className="px-3 py-1 rounded-full bg-yellow-200/50">Interview</span>
@@ -68,7 +67,7 @@ export default function App() {
             <button onClick={() => setEditMode(!editMode)} className={`px-6 py-3 rounded-2xl font-bold transition-all ${editMode ? 'bg-amber-600 text-white' : 'bg-emerald-900 text-white'}`}>
                 {editMode ? '🔒 Lock' : '🔓 Unlock'}
             </button>
-            <button onClick={() => setModalOpen(true)} className="bg-emerald-900 text-white px-8 py-3 rounded-2xl font-bold shadow-lg hover:bg-emerald-950 transition-all">+ New</button>
+            <button onClick={() => setModalOpen(true)} className="bg-emerald-900 text-white px-8 py-3 rounded-2xl font-bold shadow-lg hover:bg-emerald-950 transition-all">+ New Position</button>
         </div>
       </header>
 
@@ -76,7 +75,7 @@ export default function App() {
         <table className="w-full">
           <thead className="bg-emerald-200">
             <tr className="text-emerald-950 font-bold uppercase text-[12px] tracking-widest text-left">
-              <th className="p-6">Position</th><th className="p-6">Salary Details {editMode && <span className="text-amber-700">(Edit On)</span>}</th><th className="p-6">Logistics</th><th className="p-6">Status</th><th className="p-6 text-right">Action</th>
+              <th className="p-6">Position</th><th className="p-6">Salary Details</th><th className="p-6">Location</th><th className="p-6">Status</th><th className="p-6 text-right">Action</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-emerald-200">
@@ -99,6 +98,23 @@ export default function App() {
           </tbody>
         </table>
       </div>
+
+      {modalOpen && (
+        <div className="fixed inset-0 bg-emerald-950/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <form onSubmit={handleCreateEntry} className="bg-white p-8 rounded-3xl w-full max-w-lg shadow-2xl relative grid grid-cols-2 gap-4 border border-emerald-300">
+            <button type="button" onClick={() => setModalOpen(false)} className="absolute top-6 right-6 text-emerald-950 font-bold text-xl">&times;</button>
+            <h3 className="col-span-2 text-2xl font-bold mb-2">New Position</h3>
+            <input className="col-span-2 p-4 border border-emerald-200 rounded-xl" placeholder="Position" onChange={e => setFormData({...formData, track: e.target.value})} required />
+            <input className="col-span-2 p-4 border border-emerald-200 rounded-xl" placeholder="Company" onChange={e => setFormData({...formData, company: e.target.value})} required />
+            <input className="p-4 border border-emerald-200 rounded-xl" placeholder="Monthly Pay" onChange={e => setFormData({...formData, gehalt: e.target.value})} />
+            <input className="p-4 border border-emerald-200 rounded-xl" placeholder="Future Salary" onChange={e => setFormData({...formData, earnings: e.target.value})} />
+            <input className="col-span-2 p-4 border border-emerald-200 rounded-xl" placeholder="Location/Address" onChange={e => setFormData({...formData, address: e.target.value})} />
+            <input className="col-span-2 p-4 border border-emerald-200 rounded-xl" placeholder="HR Email" onChange={e => setFormData({...formData, email: e.target.value})} />
+            <input className="col-span-2 p-4 border border-emerald-200 rounded-xl" placeholder="Deadline" onChange={e => setFormData({...formData, deadline: e.target.value})} />
+            <button type="submit" className="col-span-2 bg-emerald-900 text-white py-4 rounded-2xl font-bold hover:bg-emerald-950">Add to Pipeline</button>
+          </form>
+        </div>
+      )}
     </div>
   );
 }
