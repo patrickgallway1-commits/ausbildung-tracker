@@ -1,17 +1,29 @@
 import React, { useState, useEffect } from 'react';
 
-// Your original data
 const initialCsvData = [
-  { id: 1, status: "not-applied", track: "Fachinformatiker (Systemintegration)", company: "ITA Systeme", email: "bewerbung@ita-systeme.de", address: "Oststr. 83, 22844 Norderstedt", deadline: "Ongoing (2027)", gehalt: "1,100€ - 1,300€", earnings: "2,800€ -> 6,000€+" },
-  { id: 2, status: "not-applied", track: "Chemielaborant (m/w/d)", company: "tesa SE", email: "recruiting@tesa.com", address: "tesa SE, Norderstedt", deadline: "31.07.2026", gehalt: "1,150€ - 1,400€", earnings: "3,000€ -> 5,500€+" }
+  { id: 1, status: "not-applied", track: "Fachinformatiker (Systemintegration)", company: "ITA Systeme", email: "bewerbung@ita-systeme.de" },
+  { id: 2, status: "not-applied", track: "Chemielaborant (m/w/d)", company: "tesa SE", email: "recruiting@tesa.com" },
+  { id: 3, status: "not-applied", track: "Elektroniker (Energie- und Gebäudetechnik)", company: "Adlershorst", email: "info@adlershorst.de" },
+  { id: 4, status: "not-applied", track: "Elektroniker für Betriebstechnik", company: "Hanseatic Power Solutions", email: "m.grenz@hps-power.com" },
+  { id: 5, status: "not-applied", track: "Informationselektroniker", company: "Fritsche Elektrotechnik", email: "mautsch@fritsche-elektro.de" }
 ];
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
-  const [items, setItems] = useState(initialCsvData);
+  
+  // This loads your saved data if it exists, otherwise uses the list above
+  const [items, setItems] = useState(() => {
+    const saved = localStorage.getItem('ausbildung_dashboard_data');
+    return saved ? JSON.parse(saved) : initialCsvData;
+  });
 
-  // --- PASSWORD GATEKEEPER ---
+  // This saves any changes you make to the data
+  useEffect(() => {
+    localStorage.setItem('ausbildung_dashboard_data', JSON.stringify(items));
+  }, [items]);
+
+  // Password Gate
   if (!isAuthenticated) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-slate-100">
@@ -34,7 +46,7 @@ export default function App() {
     );
   }
 
-  // --- FULL DASHBOARD CONTENT ---
+  // Full Dashboard
   return (
     <div className="min-h-screen bg-slate-50 p-8">
       <h1 className="text-2xl font-bold mb-6">Career Pipeline Tracker</h1>
@@ -54,8 +66,8 @@ export default function App() {
                   <div className="font-bold text-lg">{val.track}</div>
                   <div className="text-gray-500">{val.company}</div>
                 </td>
-                <td className="p-6 text-indigo-600 font-bold hover:underline">
-                  <a href={`mailto:${val.email}`}>{val.email}</a>
+                <td className="p-6">
+                  <a href={`mailto:${val.email}`} className="text-indigo-600 font-bold hover:underline">{val.email}</a>
                 </td>
                 <td className="p-6 font-bold">{val.status}</td>
               </tr>
